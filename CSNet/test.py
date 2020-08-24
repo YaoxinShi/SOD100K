@@ -37,14 +37,14 @@ def main():
     model_lib = importlib.import_module("model." + cfg.MODEL.ARCH)
     predefine_file = cfg.TEST.MODEL_CONFIG
     model = model_lib.build_model(predefine=predefine_file)
-    model.cuda()
+    #model.cuda()
     prams, flops = simplesum(model, inputsize=(3, 224, 224), device=0)
     print('  + Number of params: %.4fM' % (prams / 1e6))
     print('  + Number of FLOPs: %.4fG' % (flops / 1e9))
     this_checkpoint = cfg.TEST.CHECKPOINT
     if os.path.isfile(this_checkpoint):
         print("=> loading checkpoint '{}'".format(this_checkpoint))
-        checkpoint = torch.load(this_checkpoint)
+        checkpoint = torch.load(this_checkpoint, map_location=torch.device('cpu'))
         loadepoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
         print("=> loaded checkpoint '{}' (epoch {})".format(
@@ -86,7 +86,7 @@ def test(model, test_datasets, epoch):
                 img = np.transpose((img - mean) / std, (2, 0, 1))
                 img = torch.unsqueeze(torch.FloatTensor(img), 0)
                 input_var = torch.autograd.Variable(img)
-                input_var = input_var.cuda()
+                #input_var = input_var.cuda()
                 predict = model(input_var)
                 predict = predict[0]
                 predict = torch.sigmoid(predict.squeeze(0).squeeze(0))

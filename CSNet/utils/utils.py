@@ -11,7 +11,7 @@ def load_pretrained(model, pretrained_path):
     """
     if os.path.isfile(pretrained_path):
         print("=> loading checkpoint '{}'".format(pretrained_path))
-        pretrain_dict = torch.load(pretrained_path)
+        pretrain_dict = torch.load(pretrained_path, map_location=torch.device('cpu'))
         model_dict = {}
         state_dict = model.state_dict()
         for k, v in pretrain_dict.items():

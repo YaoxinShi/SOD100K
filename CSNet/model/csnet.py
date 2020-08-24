@@ -853,5 +853,5 @@ class SimplifiedGOctConvBR(nn.Module):
 
 if __name__ == '__main__':
     #images = torch.rand(2, 3, 224, 224)
-    images = torch.rand(1, 3, 224, 224).cuda(0)
+    images = torch.rand(1, 3, 224, 224) #.cuda(0)
     model = build_model(epoch=0, basic_split=[0.5, 0.5], expand=1)
