@@ -86,3 +86,12 @@ If you find this work or code is helpful in your research, please cite:
 }
 
 ```
+=====================
+
+Download res2net pretrained model (res2net50_v1b_26w_4s-3cf99910.pth) from https://shanghuagao.oss-cn-beijing.aliyuncs.com/res2net/res2net50_v1b_26w_4s-3cf99910.pth, and put to CSF+Res2Net folder
+
+Download CSF pretrained model (csf_res2net50_final.pth) from https://mailnankaieducn-my.sharepoint.com/:u:/g/personal/shgao_mail_nankai_edu_cn/EWYBOMYWNklLlVG38QlmozkBEIPgaCzsrrPq7BBFUEGjRg?e=ZTtbnM, and put to CSF+Res2Net folder
+
+Run:
+
+python main.py --mode=test --model=csf_res2net50_final.pth --test_fold=results --sal_mode=e --no-cuda

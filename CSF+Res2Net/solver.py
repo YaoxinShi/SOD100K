@@ -49,9 +49,15 @@ class Solver(object):
         self.net.eval()  # use_global_stats = True
         self.net.apply(weights_init)
         if self.config.load == '':
-            self.net.base.load_pretrained_model(torch.load(self.config.pretrained_model))
+            if self.config.cuda:
+                self.net.base.load_pretrained_model(torch.load(self.config.pretrained_model))
+            else:
+                self.net.base.load_pretrained_model(torch.load(self.config.pretrained_model, map_location=torch.device('cpu')))
         else:
-            self.net.load_state_dict(torch.load(self.config.load), strict=False)
+            if self.config.cuda:
+                self.net.load_state_dict(torch.load(self.config.load), strict=False)
+            else:
+                self.net.load_state_dict(torch.load(self.config.load, map_location=torch.device('cpu')), strict=False)
 
         self.lr = self.config.lr
         self.wd = self.config.wd
