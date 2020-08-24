@@ -49,6 +49,25 @@ def main():
         model.load_state_dict(checkpoint['state_dict'])
         print("=> loaded checkpoint '{}' (epoch {})".format(
             this_checkpoint, checkpoint['epoch']))
+        convert_onnx_openvino = False
+        if convert_onnx_openvino:
+            print(">>> convert pytorch to onnx")
+            x = torch.randn(1, 3, 224, 224, requires_grad=True) # Input to the model. (batch,channel,width,height)
+            torch.onnx.export(model,             # model being run
+                      x,                         # model input (or a tuple for multiple inputs)
+                      "out.onnx",                # where to save the model (can be a file or file-like object)
+                      export_params=True,        # store the trained parameter weights inside the model file
+                      opset_version=10,          # the ONNX version to export the model to
+                      do_constant_folding=True,  # whether to execute constant folding for optimization
+                      input_names = ['input'],   # the model's input names
+                      output_names = ['output'], # the model's output names
+                      verbose=False)             # print out a human-readable representation of the network
+            print(">>> verify onnx model")
+            import onnx
+            onnx_model = onnx.load("out.onnx")
+            onnx.checker.check_model(onnx_model)
+            print(">>> convert onnx to OpenVINO")
+            os.system('python "C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer\mo.py" --input_model out.onnx')
         test(model, cfg.TEST.DATASETS, loadepoch)
         eval(cfg.TASK, loadepoch)
     else:

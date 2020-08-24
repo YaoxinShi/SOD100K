@@ -34,7 +34,8 @@ def print_model_parm_flops(model, inputsize, device=-1):
         if isinstance(kernel_size, int):
             kernel_ops = kernel_size * kernel_size
         else:
-            kernel_ops = kernel_size[0] * kernel_size[1]
+            #kernel_ops = kernel_size[0] * kernel_size[1]
+            kernel_ops = 3 #fix "invalid index of a 0-dim tensor" when convert_onnx_openvino
         return output_shape[0] * output_shape[1] * output_shape[
             2] * output_shape[3] * kernel_ops
 
@@ -42,7 +43,8 @@ def print_model_parm_flops(model, inputsize, device=-1):
         if isinstance(kernel_size, int):
             kernel_ops = kernel_size * kernel_size
         else:
-            kernel_ops = kernel_size[0] * kernel_size[1]
+            #kernel_ops = kernel_size[0] * kernel_size[1]
+            kernel_ops = 3 #fix "invalid index of a 0-dim tensor" when convert_onnx_openvino
         kernel_ops += 1
         return output_shape[0] * output_shape[1] * output_shape[
             2] * output_shape[3] * kernel_ops
@@ -57,7 +59,8 @@ def print_model_parm_flops(model, inputsize, device=-1):
         if isinstance(kernel_size, int):
             kernel_ops = kernel_size * kernel_size
         else:
-            kernel_ops = kernel_size[0] * kernel_size[1]
+            #kernel_ops = kernel_size[0] * kernel_size[1]
+            kernel_ops = 3 #fix "invalid index of a 0-dim tensor" when convert_onnx_openvino
 
         kernel_ops = kernel_ops * (input_channels /
                                    groups) * (2 if multiply_adds else 1)
@@ -75,7 +78,7 @@ def print_model_parm_flops(model, inputsize, device=-1):
             input = [
                 input,
             ]
-        flops = 0
+        flops = 0.0
         # kernel_size = self.weights.shape[-1]
         kernel_size = self.weight.shape[-1]
         for i in range(self.inbranch):
