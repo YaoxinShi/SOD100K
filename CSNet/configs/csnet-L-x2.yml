@@ -23,8 +23,8 @@ TEST:
   DATASETS: ['ECSSD']
   INTERVAL: 5
   ENABLE: False
-  IMAGE_H: 400
-  IMAGE_W: 400
+  IMAGE_H: 224
+  IMAGE_W: 224
   TESTALL: False
   CHECKPOINT:  "checkpoints/csnet-L-x2/csnet-L-x2.pth.tar"
   MODEL_CONFIG: "checkpoints/csnet-L-x2/csnet-L-x2.bin"
