@@ -109,8 +109,20 @@ def test(model, test_datasets, epoch):
                 input_var = torch.autograd.Variable(img)
                 #input_var = input_var.cuda()
                 predict = model(input_var)
+
+                print("@@@@@@")
+                print(predict.shape)
+                print(predict)
+                print("@@@@@@")
+
                 predict = predict[0]
                 predict = torch.sigmoid(predict.squeeze(0).squeeze(0))
+
+                print("@@@@@@")
+                print(predict.shape)
+                print(predict)
+                print("@@@@@@")
+
                 predict = predict.data.cpu().numpy()
                 predict = (resize(
                     predict, (h, w), mode='reflect', anti_aliasing=False) *
