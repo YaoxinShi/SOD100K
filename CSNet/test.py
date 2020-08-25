@@ -123,7 +123,6 @@ def test(model, test_datasets, epoch):
         print('Speed: %f FPS' % (len(img_list)/(time_e-time_s)))
 
 
-
 def eval(method, epoch):
     evalcmd = "python eval.py --method " + method + " --range " + str(
         epoch) + "," + str(epoch + 1)
