@@ -2,6 +2,7 @@ import os
 import math
 import argparse
 import importlib
+import time
 
 import numpy as np
 import torch
@@ -86,6 +87,7 @@ def test(model, test_datasets, epoch):
         count = 0
         mean = [0.485, 0.456, 0.406]
         std = [0.229, 0.224, 0.225]
+        time_s = time.time()
         with torch.no_grad():
             for img_name in img_list:
                 img = skimage.img_as_float(
@@ -117,6 +119,8 @@ def test(model, test_datasets, epoch):
                 io.imsave(save_file, predict)
                 count += 1
         print('Dataset: {}, {} images'.format(dataset, len(img_list)))
+        time_e = time.time()
+        print('Speed: %f FPS' % (len(img_list)/(time_e-time_s)))
 
 
 def eval(method, epoch):
