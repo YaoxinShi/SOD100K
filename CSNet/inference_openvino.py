@@ -94,8 +94,14 @@ def main():
             log.warning("Image {} is resized from {} to {}".format(args.input[i], image.shape[:-1], (h, w)))
             image = cv2.resize(image, (w, h))
         image = image.transpose((2, 0, 1))  # Change data layout from HWC to CHW
+        image = image / 255.
         images[i] = image
     log.info("Batch size is {}".format(n))
+
+    print("@@@@@@")
+    print(images[0].shape) # (1, 1, 224, 224)
+    print (images[0])
+    print("@@@@@@")
 
     # Loading model to the plugin
     log.info("Loading model to the plugin")

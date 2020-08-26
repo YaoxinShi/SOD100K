@@ -25,6 +25,10 @@ img224 = resize(img / 255, (3, inference_h, inference_w), anti_aliasing=True)
 ximg = img224[np.newaxis, :, :, :]
 ximg = ximg.astype(np.float32)
 
+print("@@@@@@")
+print(ximg)
+print("@@@@@@")
+
 input_name = sess.get_inputs()[0].name
 label_name = sess.get_outputs()[0].name
 result = sess.run(None, {input_name: ximg})
