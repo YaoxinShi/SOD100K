@@ -53,7 +53,7 @@ def main():
         convert_onnx_openvino = False
         if convert_onnx_openvino:
             print(">>> convert pytorch to onnx")
-            x = torch.randn(1, 3, 224, 224, requires_grad=True) # Input to the model. (batch,channel,width,height)
+            x = torch.randn(1, 3, 400, 400, requires_grad=True) # Input to the model. (batch,channel,width,height)
             torch.onnx.export(model,             # model being run
                       x,                         # model input (or a tuple for multiple inputs)
                       "out.onnx",                # where to save the model (can be a file or file-like object)
@@ -84,7 +84,7 @@ def main():
             onnx_model = onnx.load("out.onnx")
             onnx.checker.check_model(onnx_model)
             print(">>> convert onnx to OpenVINO")
-            os.system('python "C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer\mo.py" --input_model out.onnx')
+            os.system('python "C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer\mo.py" --input_model out.onnx --data_type FP16')
             #print(">>> convert onnx to TF")
             #from onnx_tf.backend import prepare
             #tf_rep = prepare(onnx_model, strict=False)
@@ -97,9 +97,9 @@ def main():
             #   pip install onnx==1.7.0
             #   pip install --user https://github.com/onnx/onnx-tensorflow/archive/master.zip, will get 1.6.0
             #   "C:\Python36\Scripts\onnx-tf.exe convert -i out.onnx -o out.pb"
-
-        test(model, cfg.TEST.DATASETS, loadepoch)
-        eval(cfg.TASK, loadepoch)
+        else:
+            test(model, cfg.TEST.DATASETS, loadepoch)
+            eval(cfg.TASK, loadepoch)
     else:
         print(this_checkpoint, "Not found.")
 
@@ -119,6 +119,7 @@ def test(model, test_datasets, epoch):
         time_s = time.time()
         with torch.no_grad():
             for img_name in img_list:
+                print(img_name)
                 img = skimage.img_as_float(
                     io.imread(os.path.join(img_dir, img_name)))
                 h, w = img.shape[:2]
