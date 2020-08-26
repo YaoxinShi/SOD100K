@@ -63,12 +63,41 @@ def main():
                       input_names = ['input'],   # the model's input names
                       output_names = ['output'], # the model's output names
                       verbose=False)             # print out a human-readable representation of the network
+            #### Here use opset_version=10. pytorch->onnx warning and onnx->openvino pass.
+            # C:\Python36\lib\site-packages\torch\onnx\symbolic_helper.py:243: UserWarning:
+            # You are trying to export the model with onnx:Resize for ONNX opset version 10.
+            # This operator might cause results to not match the expected results by PyTorch.
+            # ONNX's Upsample/Resize operator did not match Pytorch's Interpolation until opset 11.
+            # Attributes to determine how to transform the input were added in onnx:Resize in
+            # opset 11 to support Pytorch's behavior (like coordinate_transformation_mode and nearest_mode).
+            # We recommend using opset 11 and above for models using this operator.
+            #### if use opset_version=11. pytorch->onnx pass and onnx->openvino fail.
+            # [ ERROR ]  Exception occurred during running replacer "REPLACEMENT_ID" (<class 'extensions.load.onnx.loader.ONNXLoader'>):
+            # Unexpected exception happened during extracting attributes for node Resize_51.
+            # Original exception message: ONNX Resize operation from opset 11 is not supported.
+            #### from https://blog.csdn.net/github_28260175/article/details/105704337
+            # F.interpolate(mode=nearest)                       ==> torch.onnx opset10 pass
+            # F.interpolate(mode=bilinear, align_corners=False) ==> torch.onnx opset10 warning (may cause inference mismatch)
+            # F.interpolate(mode=bilinear, align_corners=True)  ==> torch.onnx opset10 fail
             print(">>> verify onnx model")
             import onnx
             onnx_model = onnx.load("out.onnx")
             onnx.checker.check_model(onnx_model)
             print(">>> convert onnx to OpenVINO")
             os.system('python "C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer\mo.py" --input_model out.onnx')
+            #print(">>> convert onnx to TF")
+            #from onnx_tf.backend import prepare
+            #tf_rep = prepare(onnx_model, strict=False)
+            #tf_rep.export_graph("out.pb")
+            #print(">>> convert TF to OpenVINO")
+            #os.system('python "C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer\mo.py" --input_model out.pb')
+            #   Take care of the version of tensorflow/onnx/onnx-tf
+            #   pip install tensorflow==2.2.0
+            #   pip install tensorflow-addons==0.11.1
+            #   pip install onnx==1.7.0
+            #   pip install --user https://github.com/onnx/onnx-tensorflow/archive/master.zip, will get 1.6.0
+            #   "C:\Python36\Scripts\onnx-tf.exe convert -i out.onnx -o out.pb"
+
         test(model, cfg.TEST.DATASETS, loadepoch)
         eval(cfg.TASK, loadepoch)
     else:
