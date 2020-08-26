@@ -27,7 +27,7 @@ from openvino.inference_engine import IENetwork, IEPlugin
 #######################################################################
 
 def sigmoid(x):
-  return 1 / (1 + np.exp(-x))
+    return 1 / (1 + np.exp(-x))
 
 def build_argparser():
     parser = ArgumentParser()
@@ -138,7 +138,7 @@ def main():
     print("@@@@@@")
  
     result = cv2.resize(result, (original_w, original_h)) ## to 960x540
-    cv2.imwrite('out.jpg', (result*255).astype(np.uint8))
+    cv2.imwrite('out_openvino.png', (result*255).astype(np.uint8))
 
 
     del exec_net
