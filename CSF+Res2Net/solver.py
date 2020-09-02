@@ -30,6 +30,25 @@ class Solver(object):
             else:
                 self.net.load_state_dict(torch.load(self.config.model, map_location='cpu'), strict=False)
             self.net.eval()
+        convert_onnx_openvino = False
+        if convert_onnx_openvino:
+            print(">>> convert pytorch to onnx")
+            x = torch.randn(1, 3, 224, 224, requires_grad=True) # Input to the model. (batch,channel,width,height) e.g. (224,244), (256,256), (384,384), (512,512)
+            torch.onnx.export(self.net,          # model being run
+                      x,                         # model input (or a tuple for multiple inputs)
+                      "out.onnx",                # where to save the model (can be a file or file-like object)
+                      export_params=True,        # store the trained parameter weights inside the model file
+                      opset_version=10,          # the ONNX version to export the model to
+                      do_constant_folding=True,  # whether to execute constant folding for optimization
+                      input_names = ['input'],   # the model's input names
+                      output_names = ['output'], # the model's output names
+                      verbose=False)             # print out a human-readable representation of the network
+            print(">>> verify onnx model")
+            import onnx
+            onnx_model = onnx.load("out.onnx")
+            onnx.checker.check_model(onnx_model)
+            print(">>> convert onnx to OpenVINO")
+            os.system('python "C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\model_optimizer\mo.py" --input_model out.onnx --data_type FP16')
 
     # print the network information and parameter numbers
     def print_network(self, model, name):
@@ -71,6 +90,8 @@ class Solver(object):
         img_num = len(self.test_loader)
         for i, data_batch in enumerate(self.test_loader):
             images, name, im_size = data_batch['image'], data_batch['name'][0], np.asarray(data_batch['size'])
+            print(name, "begin")
+            print(im_size)
             with torch.no_grad():
                 images = Variable(images)
                 if self.config.cuda:
@@ -79,6 +100,7 @@ class Solver(object):
                 pred = np.squeeze(torch.sigmoid(preds).cpu().data.numpy())
                 multi_fuse = 255 * pred
                 cv2.imwrite(os.path.join(self.config.test_fold, name[:-4] + '_' + mode_name + '.png'), multi_fuse)
+            print(name, "end")
         time_e = time.time()
         print('Speed: %f FPS' % (img_num/(time_e-time_s)))
         print('Test Done!')
